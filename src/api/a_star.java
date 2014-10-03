@@ -137,23 +137,47 @@ public class a_star
 		{
 			closedlist.set(currentTile, 1);
 			
-			if(exist(currentTile-1, currentTile)) {parentsAndGFH(currentTile-1, currentTile, openlist, closedlist, openlistE);}
-			if(exist(currentTile+1, currentTile)) {parentsAndGFH(currentTile+1, currentTile, openlist, closedlist, openlistE);}
-			if(exist(currentTile-Ysize, currentTile)) {parentsAndGFH(currentTile-Ysize, currentTile, openlist, closedlist, openlistE);}
-			if(exist(currentTile+Ysize, currentTile)) {parentsAndGFH(currentTile+Ysize, currentTile, openlist, closedlist, openlistE);}
-			if(cutcorners)
+			if(currentTile>Ysize && currentTile<XmultY-Ysize && currentTile%Ysize!=0  && (currentTile+1)%Ysize!=0)
 			{
-				if(exist(currentTile-1, currentTile) && exist(currentTile-Ysize, currentTile) && tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);}
-				if(exist(currentTile-1, currentTile) && exist(currentTile+Ysize, currentTile) && tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);}
-				if(exist(currentTile+1, currentTile) && exist(currentTile-Ysize, currentTile) && tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);}
-				if(exist(currentTile+1, currentTile) && exist(currentTile+Ysize, currentTile) && tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);}
+				parentsAndGFH(currentTile-1, currentTile, openlist, closedlist, openlistE);
+				parentsAndGFH(currentTile+1, currentTile, openlist, closedlist, openlistE);
+				parentsAndGFH(currentTile-Ysize, currentTile, openlist, closedlist, openlistE);
+				parentsAndGFH(currentTile+Ysize, currentTile, openlist, closedlist, openlistE);
+				if(cutcorners)
+				{
+					if(tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);}
+					if(tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);}
+					if(tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);}
+					if(tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);}
+				}
+				else
+				{
+					parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);
+					parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);
+					parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);
+					parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);
+				}
 			}
 			else
 			{
-				if(exist(currentTile-Ysize-1, currentTile)) {parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);}
-				if(exist(currentTile+Ysize-1, currentTile)) {parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);}
-				if(exist(currentTile-Ysize+1, currentTile)) {parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);}
-				if(exist(currentTile+Ysize+1, currentTile)) {parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);}
+				if(exist(currentTile-1, currentTile)) {parentsAndGFH(currentTile-1, currentTile, openlist, closedlist, openlistE);}
+				if(exist(currentTile+1, currentTile)) {parentsAndGFH(currentTile+1, currentTile, openlist, closedlist, openlistE);}
+				if(exist(currentTile-Ysize, currentTile)) {parentsAndGFH(currentTile-Ysize, currentTile, openlist, closedlist, openlistE);}
+				if(exist(currentTile+Ysize, currentTile)) {parentsAndGFH(currentTile+Ysize, currentTile, openlist, closedlist, openlistE);}
+				if(cutcorners)
+				{
+					if(exist(currentTile-1, currentTile) && exist(currentTile-Ysize, currentTile) && tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);}
+					if(exist(currentTile-1, currentTile) && exist(currentTile+Ysize, currentTile) && tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);}
+					if(exist(currentTile+1, currentTile) && exist(currentTile-Ysize, currentTile) && tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);}
+					if(exist(currentTile+1, currentTile) && exist(currentTile+Ysize, currentTile) && tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);}
+				}
+				else
+				{
+					if(exist(currentTile-Ysize-1, currentTile)) {parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);}
+					if(exist(currentTile+Ysize-1, currentTile)) {parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);}
+					if(exist(currentTile-Ysize+1, currentTile)) {parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);}
+					if(exist(currentTile+Ysize+1, currentTile)) {parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);}
+				}
 			}
 			
 			if(openlist.isEmpty())
