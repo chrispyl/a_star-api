@@ -63,6 +63,7 @@ public class A_star
 	public void changeCrossCost(float cost)
 	{
 		cross_cost=cost*maxscale;
+		calculateMaxH();
 	}
 	
 	/**
@@ -72,6 +73,7 @@ public class A_star
 	public void changeDiagCost(float cost)
 	{
 		diag_cost=cost*maxscale;
+		calculateMaxH();
 	}
 	
 	/**
