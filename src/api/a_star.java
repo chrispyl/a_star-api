@@ -2,6 +2,10 @@ package api;
 import java.util.ArrayList;
 import static java.lang.Math.abs;
 
+/**
+ * A class that holds the methods for finding and returning paths from one point to another in a grid type map.
+ *
+ */
 public class a_star
 {
 	private int XmultY;
@@ -18,6 +22,15 @@ public class a_star
 	private boolean diagheu=false;
 	private boolean cutcorners=false;
 	 	
+	/**
+	 * @param map	The map chunk that the user gives.
+	 * @param Xsize	The height of the map.
+	 * @param Ysize	The width of the map.
+	 * @param start Start.
+	 * @param destination Destination.
+	 * @param cantPass	From this weight and beyond that value the access is impossible.
+	 * @param maxscale	Maximum weight of the map.
+	 */
 	public a_star(int[] map, int Xsize, int Ysize, int start, int destination, int cantPass, int maxscale)
 	{
 		this.start=start;
@@ -33,22 +46,34 @@ public class a_star
 	}
 	
 	
-	public void setArray(int ar[])
+	public void setArray(int ar[])	//dokimastikh 
 	{
 		createtiles(ar);
 	}
 	
 	
+	/**
+	 * Movement cost for cross movement.
+	 * @param cost
+	 */
 	public void changeCrossCost(int cost)
 	{
 		cross_cost=cost*maxscale;
 	}
 	
+	/**
+	 * Movement cost for diagonal movement.
+	 * @param cost
+	 */
 	public void changeDiagCost(int cost)
 	{
 		diag_cost=cost*maxscale;
 	}
 	
+	/**
+	 * Sets the heuristic to be used to find the distance from start to destination.
+	 * @param heuristic Choices are "manhattan" and "diagonal"
+	 */
 	public void setHeuristic(String heuristic)
 	{
 		if(heuristic.toLowerCase().equals("manhattan"))
@@ -63,11 +88,19 @@ public class a_star
 		}
 	}
 	
+	/**
+	 * Makes the path smoother by avoiding going diagonally through corners.
+	 * @param cutcorners Set true to activate, otherwise false.
+	 */
 	public void cutCorners(boolean cutcorners)
 	{
 		this.cutcorners=cutcorners;
 	}
 	
+	/**
+	 * Creates an array of tiles where we save attributes for them.
+	 * @param map The map chunk the user gives.
+	 */
 	private void createtiles(int[] map)
 	{
 		tiles = new tile[map.length];
@@ -78,6 +111,12 @@ public class a_star
 		//tiles[destination].setWeight(1);	//an to destination exei >cantPass den tha ftasei pote an den uparxei auth h grammh
 	}
 	
+	/**
+	 * Checks if node exists.
+	 * @param tilenumber The serial number of the node whom we check for existence
+	 * @param previoustile The serial number of the node where we stand right now.
+	 * @return
+	 */
 	private boolean exist(int tilenumber, int previoustile)
 	{
 		if(tilenumber>=(XmultY) || tilenumber<0) return false;
@@ -86,6 +125,14 @@ public class a_star
 		return true;
 	}
 	
+	/**
+	 * Calculates the G, F and H values for a node. Also, it finds its parents.
+	 * @param tile The serial number of the tile whose G, F and H values we want to calculate.
+	 * @param currentTile The tile where we are standing right now.
+	 * @param openlist	The list which holds the serial numbers of the tiles to be examined later.
+	 * @param closedlist	The list which holds the serial numbers of the tiles that were examined already.
+	 * @param openlistE	The list which keeps track of the existence of tiles in openlist.
+	 */
 	private void parentsAndGFH(int tile, int currentTile, ArrayList<Integer> openlist, ArrayList<Integer> closedlist, ArrayList<Integer> openlistE)
 	{
 		int step;
@@ -121,6 +168,9 @@ public class a_star
 		}
 	}
 	
+	/**
+	 * Finds the path from start to destination.
+	 */
 	public void findPath()
 	{
 		ArrayList<Integer> openlist = new ArrayList<Integer>();
@@ -199,6 +249,9 @@ public class a_star
 		}
 	}
 	
+	/**
+	 * @return Path from start to destination.
+	 */
 	public ArrayList<Integer> getPath()
 	{
 		ArrayList<Integer> path = new ArrayList<Integer>();
@@ -215,6 +268,10 @@ public class a_star
 		return path;
 	}
 	
+	/**
+	 * @param tile  The serial number of the node 
+	 * @return The calculated H value of the function F = G + H
+	 */
 	private int calculateH(int tile) 
 	{
 		int h=0;
