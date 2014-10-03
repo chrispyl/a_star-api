@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ui extends JFrame{
+public class ui extends JFrame{		//ena proxeiro ui gia dokimes
 	
 	private static final long serialVersionUID = 1L;
 
