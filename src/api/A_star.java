@@ -1,8 +1,8 @@
 package api;
 import java.util.ArrayList;
 import static java.lang.Math.abs;
-import static java.lang.Math.sqrt;
-import static java.lang.Math.floor;
+import static api.Normalize.zeroToOneScale;
+
 
 /**
  * A class that holds the methods for finding and returning paths from one point to another in a grid type map.
@@ -62,7 +62,7 @@ public class A_star
 	 */
 	public void changeCrossCost(float cost)
 	{
-		cross_cost=cost*maxscale;
+		cross_cost=cost;
 		calculateMaxH();
 	}
 	
@@ -72,7 +72,7 @@ public class A_star
 	 */
 	public void changeDiagCost(float cost)
 	{
-		diag_cost=cost*maxscale;
+		diag_cost=cost;
 		calculateMaxH();
 	}
 	
@@ -160,7 +160,7 @@ public class A_star
 				openlistE.set(tile, 1);
 				tiles[tile].setH(calculateH(tile));
 				tiles[tile].setPointsTo(currentTile);
-				tiles[tile].setG(tiles[currentTile].getG()+step*(tiles[tile].getWeight()/maxscale));
+				tiles[tile].setG(tiles[currentTile].getG()+step*zeroToOneScale(tiles[tile].getWeight(), maxscale));
 				tiles[tile].setF(tiles[tile].getG()+tiles[tile].getH());
 			}
 			else
@@ -168,7 +168,7 @@ public class A_star
 				if(tiles[currentTile].getG()+step<tiles[tile].getG()) 
 				{
 					tiles[tile].setPointsTo(currentTile);
-					tiles[tile].setG(tiles[currentTile].getG()+step*(tiles[tile].getWeight()/maxscale));
+					tiles[tile].setG(tiles[currentTile].getG()+step*zeroToOneScale(tiles[tile].getWeight(), maxscale));
 					tiles[tile].setF(tiles[tile].getG()+tiles[tile].getH());
 				}
 			}
@@ -295,17 +295,17 @@ public class A_star
 			{
 				h = diag_cost*distx + cross_cost*(disty-distx);
 			}
-			h=(float)(h/(floor(sqrt(XmultY))-1));
-			h=h/maxH;
 		}
 		else  
 		{
 			h=cross_cost*(distx+disty);	
-			h=h/maxH;
 		} 
-		return h;
+		return zeroToOneScale(h, maxH);
 	}
 	
+	/**
+	 * Calculates the maximum H value, that a tile can have, depending on the current heuristic.
+	 */
 	private void calculateMaxH()
 	{
 		if(diagheu==false)
