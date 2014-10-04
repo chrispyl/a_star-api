@@ -24,11 +24,20 @@ public class Ui extends JFrame{		//ena proxeiro ui gia dokimes
 	static ArrayList<Integer> path;
 	public static Color paintThisColor=Color.LIGHT_GRAY;
 	public static boolean changed = false;
-	cButton green;
-	cButton orange;
-	cButton cyan;
-	cButton light_gray;
-	cButton black;
+	cButton grass;
+	cButton lava;
+	cButton water;
+	cButton road;
+	cButton brown;
+	Color dirtColor = new Color(176/255f, 90/255f, 37/255f);
+	Color waterColor = new Color(140/255f, 215/255f, 255/255f);
+	Color lavaColor = new Color(255/255f, 109/255f, 18/255f);
+	Color grassColor = new Color(52/255f, 199/255f, 91/255f);
+	int lavaWeight=90;
+	int roadWeight=10;
+	int dirtWeight=30;
+	int grassWeight=20;
+	int waterWeight=80;
 	
 	public Ui()
 	{
@@ -51,24 +60,24 @@ public class Ui extends JFrame{		//ena proxeiro ui gia dokimes
 		GridLayout colorbuttonLayout = new GridLayout(20, 1, 0, 0);
 		colorbuttons.setLayout(colorbuttonLayout);
 		
-		green = new cButton(Color.green);
-		green.setBackground(Color.green);
+		grass = new cButton(grassColor);
+		grass.setBackground(grassColor);
 		JLabel greenlabel = new JLabel("grass");
 		
-		orange = new cButton(Color.orange);
-		orange.setBackground(Color.orange);
+		lava = new cButton(lavaColor);
+		lava.setBackground(lavaColor);
 		JLabel orangelabel = new JLabel("lava");
 
-		cyan = new cButton(Color.cyan);
-		cyan.setBackground(Color.cyan);
+		water = new cButton(waterColor);
+		water.setBackground(waterColor);
 		JLabel cyanlabel = new JLabel("water");
 
-		black = new cButton(Color.black);
-		black.setBackground(Color.black);
+		brown = new cButton(dirtColor);
+		brown.setBackground(dirtColor);
 		JLabel dirtlabel = new JLabel("dirt");
 
-		light_gray = new cButton(Color.LIGHT_GRAY);
-		light_gray.setBackground(Color.LIGHT_GRAY);
+		road = new cButton(Color.LIGHT_GRAY);
+		road.setBackground(Color.LIGHT_GRAY);
 		JLabel roadlabel = new JLabel("road");
 		
 		JPanel g = new JPanel();
@@ -91,19 +100,19 @@ public class Ui extends JFrame{		//ena proxeiro ui gia dokimes
 		BorderLayout rb = new BorderLayout();
 		r.setLayout(rb);
 		
-		g.add(green, BorderLayout.EAST);
+		g.add(grass, BorderLayout.EAST);
 		g.add(greenlabel, BorderLayout.CENTER);
 		
-		o.add(orange, BorderLayout.EAST);
+		o.add(lava, BorderLayout.EAST);
 		o.add(orangelabel, BorderLayout.CENTER);
 		
-		c.add(cyan, BorderLayout.EAST);
+		c.add(water, BorderLayout.EAST);
 		c.add(cyanlabel, BorderLayout.CENTER);
 		
-		d.add(black, BorderLayout.EAST);
+		d.add(brown, BorderLayout.EAST);
 		d.add(dirtlabel, BorderLayout.CENTER);
 		
-		r.add(light_gray, BorderLayout.EAST);
+		r.add(road, BorderLayout.EAST);
 		r.add(roadlabel, BorderLayout.CENTER);
 		
 		colorbuttons.add(g);
@@ -112,7 +121,7 @@ public class Ui extends JFrame{		//ena proxeiro ui gia dokimes
 		colorbuttons.add(d);
 		colorbuttons.add(r);
 		
-		buttons = new njb[2500];
+		buttons = new njb[100];
 		
 		for(int i=0; i<size*size; i++)
 		{
@@ -153,7 +162,7 @@ public class Ui extends JFrame{		//ena proxeiro ui gia dokimes
 		
 		for(int i=0; i<size*size; i++)
 		{
-			array[i]=100;
+			array[i]=roadWeight;
 		}
 		/*
 		start=rand.nextInt(size*size);
@@ -227,23 +236,23 @@ public class Ui extends JFrame{		//ena proxeiro ui gia dokimes
 			changed=true;
 			if(paintThisColor==Color.LIGHT_GRAY) //road
 			{
-				weight=100;
+				weight=roadWeight;
 			}
-			else if(paintThisColor==Color.ORANGE) //lava
+			else if(paintThisColor==lavaColor) //lava
 			{
-				weight=9000;
+				weight=lavaWeight;
 			}
-			else if(paintThisColor==Color.CYAN) //water
+			else if(paintThisColor==waterColor) //water
 			{
-				weight=8000;
+				weight=waterWeight;
 			}
-			else if(paintThisColor==Color.GREEN) //grass
+			else if(paintThisColor==grassColor) //grass
 			{
-				weight=500;
+				weight=grassWeight;
 			}
-			else if(paintThisColor==Color.BLACK) //dirt
+			else if(paintThisColor==dirtColor) //dirt
 			{
-				weight=1000;
+				weight=dirtWeight;
 			}
 			array[number]=weight;
 		}
@@ -279,7 +288,7 @@ public class Ui extends JFrame{		//ena proxeiro ui gia dokimes
 		Ui in = new Ui();
 		in.makeMatrix();
 		in.myui();
-		A_star astar = new A_star(array, size, size, start, destination, 9000, 10000);
+		A_star astar = new A_star(array, size, size, start, destination, 90, 100);
 		astar.findPath();
 		path=astar.getPath();
 		in.redraw();
