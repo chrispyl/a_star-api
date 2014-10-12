@@ -13,7 +13,7 @@ public class InsertionSort {
 	 * @param tiles An array with the tiles of the map.
 	 * @param IsStartTile	Checks if the current tile is the one that we start from.
 	 */
-	void sort(ArrayList<Integer> openlist, Tile[] tiles, boolean IsStartTile)
+	public static void sort(ArrayList<Integer> openlist, Tile[] tiles, boolean IsStartTile)
 	{
 		int number;
 		if(IsStartTile==true) 

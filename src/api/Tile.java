@@ -7,11 +7,16 @@ package api;
 public class Tile
 {
 	private float h, f, g, weight;
-	private int pointsTo;
+	private int pointsTo, number;
 	
 	/**Sets the weight of the tile.
 	 * @param weight 
 	 */
+	int getNumber()
+	{
+		return number;
+	}
+	
 	void setWeight(float weight)
 	{
 		this.weight=weight;
@@ -20,9 +25,10 @@ public class Tile
 	/**
 	 * @param weight The weight of the tile.
 	 */
-	Tile(float weight)
+	Tile(float weight, int number)
 	{
 		this.weight=weight;
+		this.number=number;
 	}
 	
 	/**
@@ -36,9 +42,9 @@ public class Tile
 	/**Sets this tile as a parent to another tile.
 	 * @param pointsto	The serial number of the tile which we want to have this tile as a parent.
 	 */
-	void setPointsTo(int pointsto)
+	void setPointsTo(int pointsTo)
 	{
-		this.pointsTo=pointsto;
+		this.pointsTo=pointsTo;
 	}
 	
 	/**

@@ -11,19 +11,19 @@ import static api.Normalize.zeroToOneScale;
 public class A_star
 {
 	private int XmultY;	//total number of tiles
-	private int Xsize;
-	private int Ysize;
+	private int xSize;
+	private int ySize;
 	private Tile[] tiles;
 	private int start;		 
 	private int destination; 
-	private float maxscale;
-	private float cross_cost; 
-	private float diag_cost; 
+	private float maxScale;
+	private float crossCost; 
+	private float diagCost; 
 	private float cantPass;	
 	private float maxH;
 	private boolean manhattanheu=true;
 	private boolean diagheu=false;
-	private boolean cutcorners=false;
+	private boolean cutCorners=false;
 	 	
 	/**
 	 * @param map	The map chunk that the user gives.
@@ -32,19 +32,19 @@ public class A_star
 	 * @param start Start.
 	 * @param destination Destination.
 	 * @param cantPass	From this weight and beyond that value the access is impossible.
-	 * @param maxscale	Maximum weight of the map.
+	 * @param maxScale	Maximum weight of the map.
 	 */
-	public A_star(float[] map, int Xsize, int Ysize, int start, int destination, float cantPass, float maxscale)
+	public A_star(float[] map, int xSize, int ySize, int start, int destination, float cantPass, float maxScale)
 	{
 		this.start=start;
 		this.destination=destination;
-		this.Xsize=Xsize;
-		this.Ysize=Ysize;
-		this.XmultY=Xsize*Ysize;
+		this.xSize=xSize;
+		this.ySize=ySize;
+		this.XmultY=xSize*ySize;
 		this.cantPass=cantPass;
-		this.maxscale=maxscale;
-		cross_cost=1.0f;
-		diag_cost=1.4f;
+		this.maxScale=maxScale;
+		crossCost=1.0f;
+		diagCost=1.4f;
 		calculateMaxH();
 		createTiles(map);
 	}
@@ -62,7 +62,7 @@ public class A_star
 	 */
 	public void changeCrossCost(float cost)
 	{
-		cross_cost=cost;
+		crossCost=cost;
 		calculateMaxH();
 	}
 	
@@ -72,7 +72,7 @@ public class A_star
 	 */
 	public void changeDiagCost(float cost)
 	{
-		diag_cost=cost;
+		diagCost=cost;
 		calculateMaxH();
 	}
 	
@@ -99,9 +99,9 @@ public class A_star
 	 * Makes the path smoother by avoiding going diagonally through corners.
 	 * @param cutcorners Set true to activate, otherwise false.
 	 */
-	public void cutCorners(boolean cutcorners)
+	public void cutCorners(boolean cutCorners)
 	{
-		this.cutcorners=cutcorners;
+		this.cutCorners=cutCorners;
 	}
 	
 	/**
@@ -113,22 +113,22 @@ public class A_star
 		tiles = new Tile[map.length];
 		for(int i=0; i<map.length; i++)
 		{
-			tiles[i] = new Tile(map[i]);
+			tiles[i] = new Tile(map[i], i);
 		}
 		//tiles[destination].setWeight(1);	//an to destination exei >cantPass den tha ftasei pote an den uparxei auth h grammh
 	}
 	
 	/**
-	 * Checks if node exists.
-	 * @param tilenumber The serial number of the node whom we check for existence
-	 * @param previoustile The serial number of the node where we stand right now.
+	 * Checks if tile exists.
+	 * @param tileNumber The serial number of the tile which we check for existence
+	 * @param previousTile The serial number of the tile where we stand right now.
 	 * @return
 	 */
-	private boolean exist(int tilenumber, int previoustile)
+	private boolean exist(int tileNumber, int previousTile)
 	{
-		if(tilenumber>=(XmultY) || tilenumber<0) return false;
-		if(tilenumber%Ysize==0 && (previoustile+1)%Ysize==0) return false; 
-		if((tilenumber+1)%Ysize==0 && previoustile%Ysize==0) return false;
+		if(tileNumber>=(XmultY) || tileNumber<0) return false;
+		if(tileNumber%ySize==0 && (previousTile+1)%ySize==0) return false; 
+		if((tileNumber+1)%ySize==0 && previousTile%ySize==0) return false;
 		return true;
 	}
 	
@@ -138,37 +138,36 @@ public class A_star
 	 * @param currentTile The tile where we are standing right now.
 	 * @param openlist	The list which holds the serial numbers of the tiles to be examined later.
 	 * @param closedlist	The list which holds the serial numbers of the tiles that were examined already.
-	 * @param openlistE	The list which keeps track of the existence of tiles in openlist.
+	 * @param openlistExist	The list which keeps track of the existence of tiles in openlist.
 	 */
-	private void parentsAndGFH(int tile, int currentTile, ArrayList<Integer> openlist, ArrayList<Integer> closedlist, ArrayList<Integer> openlistE)
+	private void parentsAndGFH(int tile, int currentTile, BinaryHeap openlist, ArrayList<Integer> closedlist)
 	{
 		float step;
 		if(tiles[tile].getWeight()<cantPass && closedlist.get(tile)==0)
 		{
-			if((tile+1==currentTile) || (tile-1==currentTile) || (tile+Ysize==currentTile) || (tile-Ysize==currentTile))
+			if((tile+1==currentTile) || (tile-1==currentTile) || (tile+ySize==currentTile) || (tile-ySize==currentTile))
 			{
-				step=cross_cost;
+				step=crossCost;
 			}
 			else
 			{
-				step=diag_cost;
+				step=diagCost;
 			}
 			
-			if(openlistE.get(tile)==0)
+			if(openlist.contains(tile)==false)
 			{
-				openlist.add(tile);
-				openlistE.set(tile, 1);
 				tiles[tile].setH(calculateH(tile));
 				tiles[tile].setPointsTo(currentTile);
-				tiles[tile].setG(tiles[currentTile].getG()+step*zeroToOneScale(tiles[tile].getWeight(), maxscale));
+				tiles[tile].setG(tiles[currentTile].getG()+step*zeroToOneScale(tiles[tile].getWeight(), maxScale));
 				tiles[tile].setF(tiles[tile].getG()+tiles[tile].getH());
+				openlist.insert(tiles[tile]);
 			}
 			else
 			{
 				if(tiles[currentTile].getG()+step<tiles[tile].getG()) 
 				{
 					tiles[tile].setPointsTo(currentTile);
-					tiles[tile].setG(tiles[currentTile].getG()+step*zeroToOneScale(tiles[tile].getWeight(), maxscale));
+					tiles[tile].setG(tiles[currentTile].getG()+step*zeroToOneScale(tiles[tile].getWeight(), maxScale));
 					tiles[tile].setF(tiles[tile].getG()+tiles[tile].getH());
 				}
 			}
@@ -180,11 +179,9 @@ public class A_star
 	 */
 	public void findPath()
 	{
-		ArrayList<Integer> openlist = new ArrayList<Integer>();
-		ArrayList<Integer> openlistE = new ArrayList<Integer>();
+		BinaryHeap openlist = new BinaryHeap(XmultY);
 		ArrayList<Integer> closedlist = new ArrayList<Integer>();
-		for(int i=0; i<XmultY; i++) {closedlist.add(0); openlistE.add(0);}
-		InsertionSort sortObject = new InsertionSort();
+		for(int i=0; i<XmultY; i++) {closedlist.add(0);}
 		int currentTile=start;
 		tiles[start].setH(calculateH(start));
 		tiles[start].setF(tiles[start].getH()); 	
@@ -194,65 +191,55 @@ public class A_star
 		{
 			closedlist.set(currentTile, 1);
 			
-			if(currentTile>Ysize && currentTile<XmultY-Ysize && currentTile%Ysize!=0  && (currentTile+1)%Ysize!=0)
+			if(currentTile>ySize && currentTile<XmultY-ySize && currentTile%ySize!=0  && (currentTile+1)%ySize!=0)
 			{
-				parentsAndGFH(currentTile-1, currentTile, openlist, closedlist, openlistE);
-				parentsAndGFH(currentTile+1, currentTile, openlist, closedlist, openlistE);
-				parentsAndGFH(currentTile-Ysize, currentTile, openlist, closedlist, openlistE);
-				parentsAndGFH(currentTile+Ysize, currentTile, openlist, closedlist, openlistE);
-				if(cutcorners)
+				parentsAndGFH(currentTile-1, currentTile, openlist, closedlist);
+				parentsAndGFH(currentTile+1, currentTile, openlist, closedlist);
+				parentsAndGFH(currentTile-ySize, currentTile, openlist, closedlist);
+				parentsAndGFH(currentTile+ySize, currentTile, openlist, closedlist);
+				if(cutCorners)
 				{
-					if(tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);}
-					if(tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);}
-					if(tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);}
-					if(tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);}
+					if(tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile-ySize].getWeight()<cantPass) {parentsAndGFH(currentTile-ySize-1, currentTile, openlist, closedlist);}
+					if(tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile+ySize].getWeight()<cantPass) {parentsAndGFH(currentTile+ySize-1, currentTile, openlist, closedlist);}
+					if(tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile-ySize].getWeight()<cantPass) {parentsAndGFH(currentTile-ySize+1, currentTile, openlist, closedlist);}
+					if(tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile+ySize].getWeight()<cantPass) {parentsAndGFH(currentTile+ySize+1, currentTile, openlist, closedlist);}
 				}
 				else
 				{
-					parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);
-					parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);
-					parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);
-					parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);
+					parentsAndGFH(currentTile-ySize-1, currentTile, openlist, closedlist);
+					parentsAndGFH(currentTile+ySize-1, currentTile, openlist, closedlist);
+					parentsAndGFH(currentTile-ySize+1, currentTile, openlist, closedlist);
+					parentsAndGFH(currentTile+ySize+1, currentTile, openlist, closedlist);
 				}
 			}
 			else
 			{
-				if(exist(currentTile-1, currentTile)) {parentsAndGFH(currentTile-1, currentTile, openlist, closedlist, openlistE);}
-				if(exist(currentTile+1, currentTile)) {parentsAndGFH(currentTile+1, currentTile, openlist, closedlist, openlistE);}
-				if(exist(currentTile-Ysize, currentTile)) {parentsAndGFH(currentTile-Ysize, currentTile, openlist, closedlist, openlistE);}
-				if(exist(currentTile+Ysize, currentTile)) {parentsAndGFH(currentTile+Ysize, currentTile, openlist, closedlist, openlistE);}
-				if(cutcorners)
+				if(exist(currentTile-1, currentTile)) {parentsAndGFH(currentTile-1, currentTile, openlist, closedlist);}
+				if(exist(currentTile+1, currentTile)) {parentsAndGFH(currentTile+1, currentTile, openlist, closedlist);}
+				if(exist(currentTile-ySize, currentTile)) {parentsAndGFH(currentTile-ySize, currentTile, openlist, closedlist);}
+				if(exist(currentTile+ySize, currentTile)) {parentsAndGFH(currentTile+ySize, currentTile, openlist, closedlist);}
+				if(cutCorners)
 				{
-					if(exist(currentTile-1, currentTile) && exist(currentTile-Ysize, currentTile) && tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);}
-					if(exist(currentTile-1, currentTile) && exist(currentTile+Ysize, currentTile) && tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);}
-					if(exist(currentTile+1, currentTile) && exist(currentTile-Ysize, currentTile) && tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile-Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);}
-					if(exist(currentTile+1, currentTile) && exist(currentTile+Ysize, currentTile) && tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile+Ysize].getWeight()<cantPass) {parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);}
+					if(exist(currentTile-1, currentTile) && exist(currentTile-ySize, currentTile) && tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile-ySize].getWeight()<cantPass) {parentsAndGFH(currentTile-ySize-1, currentTile, openlist, closedlist);}
+					if(exist(currentTile-1, currentTile) && exist(currentTile+ySize, currentTile) && tiles[currentTile-1].getWeight()<cantPass && tiles[currentTile+ySize].getWeight()<cantPass) {parentsAndGFH(currentTile+ySize-1, currentTile, openlist, closedlist);}
+					if(exist(currentTile+1, currentTile) && exist(currentTile-ySize, currentTile) && tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile-ySize].getWeight()<cantPass) {parentsAndGFH(currentTile-ySize+1, currentTile, openlist, closedlist);}
+					if(exist(currentTile+1, currentTile) && exist(currentTile+ySize, currentTile) && tiles[currentTile+1].getWeight()<cantPass && tiles[currentTile+ySize].getWeight()<cantPass) {parentsAndGFH(currentTile+ySize+1, currentTile, openlist, closedlist);}
 				}
 				else
 				{
-					if(exist(currentTile-Ysize-1, currentTile)) {parentsAndGFH(currentTile-Ysize-1, currentTile, openlist, closedlist, openlistE);}
-					if(exist(currentTile+Ysize-1, currentTile)) {parentsAndGFH(currentTile+Ysize-1, currentTile, openlist, closedlist, openlistE);}
-					if(exist(currentTile-Ysize+1, currentTile)) {parentsAndGFH(currentTile-Ysize+1, currentTile, openlist, closedlist, openlistE);}
-					if(exist(currentTile+Ysize+1, currentTile)) {parentsAndGFH(currentTile+Ysize+1, currentTile, openlist, closedlist, openlistE);}
+					if(exist(currentTile-ySize-1, currentTile)) {parentsAndGFH(currentTile-ySize-1, currentTile, openlist, closedlist);}
+					if(exist(currentTile+ySize-1, currentTile)) {parentsAndGFH(currentTile+ySize-1, currentTile, openlist, closedlist);}
+					if(exist(currentTile-ySize+1, currentTile)) {parentsAndGFH(currentTile-ySize+1, currentTile, openlist, closedlist);}
+					if(exist(currentTile+ySize+1, currentTile)) {parentsAndGFH(currentTile+ySize+1, currentTile, openlist, closedlist);}
 				}
 			}
 			
-			if(openlist.isEmpty())
+			if(openlist.heapEmpty())
 			{
 				break;
 			}
 			
-			if(currentTile!=start) 
-			{
-				sortObject.sort(openlist, tiles, false);
-			} 
-			else
-			{
-				sortObject.sort(openlist, tiles, true);	//kanei sort me bash ta f
-			}
-			currentTile=openlist.get(openlist.size()-1);
-			openlist.remove(openlist.size()-1);	
-			openlistE.set(currentTile, 0);
+			currentTile=openlist.getMin().getNumber();
 		}
 	}
 	
@@ -276,29 +263,29 @@ public class A_star
 	}
 	
 	/**
-	 * @param tile  The serial number of the node 
+	 * @param tile  The serial number of the tile 
 	 * @return The calculated H value of the function F = G + H
 	 */
 	private float calculateH(int tile) 
 	{
 		float h=0;
-		int tilex=tile/Ysize, tiley=tile%Ysize, destinationx=destination/Ysize, destinationy=destination%Ysize;
+		int tilex=tile/ySize, tiley=tile%ySize, destinationx=destination/ySize, destinationy=destination%ySize;
 		int distx=abs(tilex-destinationx);       
 		int disty=abs(tiley-destinationy);
 		if(diagheu)	
 		{
 			if(distx>disty)
 			{
-				h = diag_cost*disty + cross_cost*(distx-disty);
+				h = diagCost*disty + crossCost*(distx-disty);
 			}
 			else
 			{
-				h = diag_cost*distx + cross_cost*(disty-distx);
+				h = diagCost*distx + crossCost*(disty-distx);
 			}
 		}
 		else  
 		{
-			h=cross_cost*(distx+disty);	
+			h=crossCost*(distx+disty);	
 		} 
 		return zeroToOneScale(h, maxH);
 	}
@@ -310,52 +297,52 @@ public class A_star
 	{
 		if(diagheu==false)
 		{
-			maxH=((Xsize-1)+(Ysize-1))*cross_cost;
+			maxH=((xSize-1)+(ySize-1))*crossCost;
 		}
 		else
 		{
-			int temptilex=0;
-			int temptiley=0;
-			int tempdestinationx=Xsize-1;
-			int tempdestinationy=Ysize-1;
+			int tempTilex=0;
+			int tempTiley=0;
+			int tempDestinationx=xSize-1;
+			int tempDestinationy=ySize-1;
 
-			while(temptilex!=tempdestinationx && temptiley!=tempdestinationy)
+			while(tempTilex!=tempDestinationx && tempTiley!=tempDestinationy)
 			{
-				if(temptilex<tempdestinationx)
+				if(tempTilex<tempDestinationx)
 				{
-					if(temptiley<tempdestinationy)
+					if(tempTiley<tempDestinationy)
 					{
-						temptilex++;
-						temptiley++;
+						tempTilex++;
+						tempTiley++;
 					}
 					else
 					{
-						temptilex++;
-						temptiley--;
+						tempTilex++;
+						tempTiley--;
 					}
 				}
 				else
 				{
-					if(temptiley<tempdestinationy)
+					if(tempTiley<tempDestinationy)
 					{
-						temptilex--;
-						temptiley++;
+						tempTilex--;
+						tempTiley++;
 					}
 					else
 					{
-						temptilex--;
-						temptiley--;
+						tempTilex--;
+						tempTiley--;
 					}
 				}
-				maxH+=diag_cost;
+				maxH+=diagCost;
 			}
-			if(temptilex==tempdestinationx)
+			if(tempTilex==tempDestinationx)
 			{
-				maxH+=abs(temptiley-tempdestinationy)*cross_cost;
+				maxH+=abs(tempTiley-tempDestinationy)*crossCost;
 			}
-			else if(temptiley==tempdestinationy)
+			else if(tempTiley==tempDestinationy)
 			{
-				maxH+=abs(temptilex-tempdestinationx)*cross_cost;
+				maxH+=abs(tempTilex-tempDestinationx)*crossCost;
 			}
 		}
 	}
