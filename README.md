@@ -1,0 +1,1 @@
+An api for the A* algorithm.
