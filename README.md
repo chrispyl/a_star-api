@@ -25,3 +25,5 @@ water: 80
 lava: 90
 ```
 The lower the weight the easier it is to go through it. The input to cantPass parameter in the constructor is set to 90 so lava is not acessible.
+
+![alt tag](Demo.JPG)
