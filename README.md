@@ -1,5 +1,3 @@
-#### **An api for the A\* algorithm**
-
 #### **How to use**
 
 In order to use the api, an A_star object has to be created
