@@ -1,4 +1,4 @@
-#### **An api for the A\* algorithm.**
+#### **An api for the A\* algorithm**
 
 #### **How to use**
 
